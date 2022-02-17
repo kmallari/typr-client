@@ -4,60 +4,75 @@ interface Words {
   words: string[][];
   loading: boolean;
   error: boolean;
-  currentWordIndex: number;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   inputRef: MutableRefObject<HTMLInputElement | null>;
+  activeWord: string[];
+  input: string[];
+  arrToStr: (s: string[]) => string;
+  finishedWords: string[];
 }
 
 export const Words: React.FC<Words> = ({
   words,
   loading,
   error,
-  currentWordIndex,
+  activeWord,
+  input,
+  arrToStr,
+  finishedWords,
 }) => {
-  let i: number = -1;
-  let j: number = -1;
-
   // console.log("joined", words);
   // console.log("curr", currentWordIndex);
 
   return (
     <div className='w-5/6 h-28 xl:w-7/12 absolute text-2xl overflow-hidden select-none leading-relaxed font-jb_mono text-slate-600 flex flex-row flex-wrap left-0 right-0 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto'>
       {
-        // if loading is true, show loading text
+        // IF LOADING IS TRUE, SHOW "Loading..."
         loading
           ? "Loading..."
-          : // if error is true, show error text
+          : // IF ERROR IS TRUE, SHOW "Error"
           error
           ? "Error"
-          : // if data is not empty, show data
+          : // IF DATA IS NOT EMPTY, SHOW DATA
           words.length > 0
-          ? words.map((word: string[]) => {
-              i++;
+          ? words.map((word: string[], i: number) => {
               return (
-                <div key={i} className='flex flex-row flex-wrap'>
+                <div
+                  key={i}
+                  className={`flex flex-row flex-wrap ${
+                    finishedWords.includes(arrToStr(word))
+                      ? "text-green-500"
+                      : ""
+                  }`}
+                >
                   {
                     // if word is not empty, show word
-                    word.map((letter: string) => {
-                      j++;
+                    word.map((letter: string, j: number) => {
                       return (
-                        <span
-                          key={j}
+                        <div
+                          key={`${i}${j}`}
                           className={
-                            currentWordIndex > j ? "text-green-500" : undefined
+                            activeWord[j] === input[j] &&
+                            arrToStr(word) === arrToStr(activeWord)
+                              ? "text-green-500"
+                              : activeWord[j] != input[j] &&
+                                input[j] != null &&
+                                arrToStr(word) === arrToStr(activeWord)
+                              ? "text-red-500"
+                              : ""
                           }
                         >
                           {letter}
-                        </span>
+                        </div>
                       );
                     })
                   }
-                  <div>&nbsp;</div>
+                  <span>&nbsp;</span>
                 </div>
               );
             })
-          : // if data is empty, show empty text
-            "No words found"
+          : // IF DATA IS EMPTY, SHOW "No words found."
+            "No words found."
       }
     </div>
   );
