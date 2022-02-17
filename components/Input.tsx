@@ -8,9 +8,6 @@ interface InputProps {
 }
 
 export const Input: React.FC<InputProps> = ({ onChangeHandler, inputRef }) => {
-  const correct: string = "text-green-500";
-  const incorrect: string = "text-red-500";
-
   return (
     <div>
       <input

@@ -8,14 +8,17 @@ import { Input } from "../components/Input";
 
 const Home: NextPage = () => {
   const [TwoDWords, setTwoDWords] = useState<string[][]>([]);
-  const [pureLetters, setPureLetters] = useState<string[]>([]);
+  const [words, setWords] = useState<string[][]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [currLetter, setCurrLetter] = useState<string>("");
+  const [currWord, setCurrWord] = useState<string[]>([]);
   const [currWordIndex, setCurrWordIndex] = useState<number>(0);
   const [stringInput, setStringInput] = useState<string>("");
+  const [fiftyCount, setFiftyCount] = useState<number>(0);
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  let l = 0;
+
   const splitTo2DArr = (input: string[]): string[][] => {
     // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
     const words: string[][] = input.map((word: string) => {
@@ -30,20 +33,20 @@ const Home: NextPage = () => {
       });
     });
 
-    // JOINS THE ARRAY OF LETTERS TOGETHER
-    const joinedWords: string[][] = [];
+    // // JOINS THE ARRAY OF LETTERS TOGETHER
+    // const joinedWords: string[][] = [];
 
-    for (let i = 0; i < letters.length * 2; i++) {
-      if (i % 2 === 0) {
-        joinedWords.push(letters[i / 2]);
-      } else {
-        joinedWords.push([" "]);
-      }
-    }
+    // for (let i = 0; i < letters.length * 2; i++) {
+    //   if (i % 2 === 0) {
+    //     joinedWords.push(letters[i / 2]);
+    //   } else {
+    //     joinedWords.push([" "]);
+    //   }
+    // }
 
-    // console.log("JOINED!", joinedWords);
+    // console.log("LETTERS!", letters);
 
-    return joinedWords;
+    return letters;
   };
 
   const splitToLetters = (input: string[]): string[] => {
@@ -63,6 +66,31 @@ const Home: NextPage = () => {
     return letters;
   };
 
+  const getFifty = (arr: string[][]): string[][] => {
+    const start: number = 50 * fiftyCount;
+    const end: number = start + 50;
+    const a: string[][] = [];
+
+    for (let i = start; i < end; i++) {
+      a.push(arr[i]);
+    }
+
+    setFiftyCount((old) => old + 1);
+
+    return a;
+  };
+
+  // COUNT HOW MANY SPACES IN A STRING
+  const countSpaces = (str: string): number => {
+    let count: number = 0;
+    for (let i = 0; i < str.length; i++) {
+      if (str[i] === " ") {
+        count++;
+      }
+    }
+    return count;
+  };
+
   // FETCH DATA FROM https://5kg8owmfme.execute-api.ap-southeast-1.amazonaws.com/getWords
   const fetchData = async () => {
     try {
@@ -70,9 +98,11 @@ const Home: NextPage = () => {
         "https://5kg8owmfme.execute-api.ap-southeast-1.amazonaws.com/getWords"
       );
       const json: string[] = await response.json();
-      await setTwoDWords(splitTo2DArr(json));
-      await setPureLetters(splitToLetters(json));
-      await setCurrLetter(pureLetters[0]);
+      setTwoDWords(splitTo2DArr(json));
+      setWords(getFifty(splitTo2DArr(json)));
+      setCurrWord(getFifty(splitTo2DArr(json))[0]);
+      // setPureLetters(splitToLetters(json));
+      // setCurrLetter(pureLetters[0]);
 
       console.log("currLetter", currLetter);
 
@@ -86,16 +116,20 @@ const Home: NextPage = () => {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     console.log(e.currentTarget.value);
-    // setStringInput(e.currentTarget.value);
-    // setCurrWordIndex((e.currentTarget.value.length));
-    // l = e.currentTarget.value.length;
-    // console.log(l);
+    setStringInput(e.currentTarget.value);
+
+    const currString: string = e.currentTarget.value;
+
+    // IDEA: IF LAST INPUT OF INPUT IS SPACE, CLEAR INPUT AND MOVE WORD INDEX
+
+    setCurrWordIndex(e.currentTarget.value.length - countSpaces(currString));
   };
 
   // FETCH DATA WHEN COMPONENTS MOUNTS
   useEffect(() => {
     fetchData();
     inputRef.current?.focus();
+
     // ADD EVENT LISTENER FOR THE KEYDOWN EVENT
     // document.addEventListener("keydown", onChangeHandler);
   }, []);
@@ -111,10 +145,10 @@ const Home: NextPage = () => {
           }}
         >
           <Words
-            words={TwoDWords}
+            words={words}
             loading={loading}
             error={error}
-            currentWordIndex={l}
+            currentWordIndex={currWordIndex}
             inputRef={inputRef}
             onChangeHandler={onChangeHandler}
           />

@@ -14,15 +14,12 @@ export const Words: React.FC<Words> = ({
   loading,
   error,
   currentWordIndex,
-  onChangeHandler,
-  inputRef,
 }) => {
   let i: number = -1;
   let j: number = -1;
 
   // console.log("joined", words);
-  console.log("curr", currentWordIndex);
-  let idx = 0;
+  // console.log("curr", currentWordIndex);
 
   return (
     <div className='w-5/6 h-28 xl:w-7/12 absolute text-2xl overflow-hidden select-none leading-relaxed font-jb_mono text-slate-600 flex flex-row flex-wrap left-0 right-0 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto'>
@@ -44,12 +41,18 @@ export const Words: React.FC<Words> = ({
                     word.map((letter: string) => {
                       j++;
                       return (
-                        <span key={j}>
-                          {letter === " " ? <div>&nbsp;</div> : letter}
+                        <span
+                          key={j}
+                          className={
+                            currentWordIndex > j ? "text-green-500" : undefined
+                          }
+                        >
+                          {letter}
                         </span>
                       );
                     })
                   }
+                  <div>&nbsp;</div>
                 </div>
               );
             })
