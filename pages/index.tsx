@@ -90,6 +90,17 @@ const Home: NextPage = () => {
     }
   };
 
+  // GENERATE AN ARRAY OF UNIQUE RANDOM INTEGERS
+  const generateRandom = (length: number): number[] => {
+    let arr: number[] = [];
+    while (arr.length < length) {
+      let random = Math.floor(Math.random() * length);
+      if (arr.indexOf(random) === -1) arr.push(random);
+    }
+    return arr;
+  };
+  
+
   // DETECTS KEYDOWN EVENT AND SETS currentLetterInput TO THE LETTER PRESSED
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -101,6 +112,10 @@ const Home: NextPage = () => {
     // console.log("word", word);
     // console.log("activeWordString", activeWordString);
     // console.log(finishedWords);
+
+    // TO DO:
+    // ADD EXTRA LETTERS WHEN TYPING AFTER THE WORD
+    // MOVE WORDS UP
 
     if (word === activeWordString + " ") {
       const idx = activeIndex + 1;
