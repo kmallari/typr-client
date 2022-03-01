@@ -17,7 +17,6 @@ const Home: NextPage = () => {
   const [fiftyCount, setFiftyCount] = useState<number>(0);
   const [finishedWords, setFinishedWords] = useState<string[]>([]);
   const [charsPerRow, setCharsPerRow] = useState<number>(61);
-  // const [wordsByRow, setWordsByRow] = useState<string[][][]>([]);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
@@ -98,6 +97,7 @@ const Home: NextPage = () => {
       setActiveIndex((idx) => idx + 1);
       setActiveWord(words[idx]);
       setInput([]);
+      deleteTopRow(word.slice(0, -1));
       e.currentTarget.value = "";
     }
   };
@@ -107,7 +107,7 @@ const Home: NextPage = () => {
     let row: string[][] = [];
     let sum: number = 0;
 
-
+    // SPLITS THE WORDS PER ROW
     for (let i = 0; i < words.length; i++) {
       sum += words[i].length + 1;
       row.push(words[i]);
@@ -121,13 +121,38 @@ const Home: NextPage = () => {
 
     const lastWords: string[][] = [];
 
+    // GETS THE LAST WORD PER ROW
     for (let i = 0; i < rows.length; i++) {
       lastWords.push(rows[i][rows[i].length - 1]);
     }
 
     setLastWordPerRow(lastWords);
-    console.log(lastWords);
+  };
 
+  const deleteTopRow = (w: string): void => {
+    const tempWords: string[][] = words;
+    const lastWords: string[] = [];
+
+    for (let i = 0; i < lastWordPerRow.length; i++) {
+      lastWords.push(lastWordPerRow[i].join(""));
+    }
+
+    let index: number = 0;
+    if (lastWords.indexOf(w) > 0) {
+      while (true) {
+        if (words[index].join("") === lastWords[lastWords.indexOf(w) - 1]) {
+          index++;
+          break;
+        }
+        index++;
+      }
+    }
+
+    for (let i = 0; i < index; i++) {
+      tempWords.shift();
+    }
+    setWords(tempWords);
+    setActiveIndex((idx) => idx - index);
   };
 
   const calculateCharsPerRow = (): void => {
@@ -167,9 +192,12 @@ const Home: NextPage = () => {
   useEffect(() => {
     fetchData();
     inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
     calculateCharsPerRow();
     splitToRows();
-  }, []);
+  }, [words]);
 
   return (
     <div className='m-0 bg-slate-800 h-screen w-full'>

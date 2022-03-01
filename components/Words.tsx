@@ -47,7 +47,7 @@ export const Words: React.FC<Words> = ({
                     // IF THE WORD IS ALREADY IN FINISHED WORDS,
                     // COLOR IT GREEN.
                     finishedWords.includes(arrToStr(word))
-                      ? "text-green-500 font-bold"
+                      ? "text-green-500 font"
                       : ""
                   }`}
                 >
@@ -64,7 +64,7 @@ export const Words: React.FC<Words> = ({
                             // COLOR IT RED, WITH AN UNDERLINE.
                             activeWord[j] === input[j] &&
                             arrToStr(word) === arrToStr(activeWord)
-                              ? "text-green-500 font-bold"
+                              ? "text-green-500 font"
                               : activeWord[j] != input[j] &&
                                 input[j] != null &&
                                 arrToStr(word) === arrToStr(activeWord)
