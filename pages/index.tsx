@@ -17,7 +17,8 @@ const Home: NextPage = () => {
   const [fiftyCount, setFiftyCount] = useState<number>(0);
   const [finishedWords, setFinishedWords] = useState<string[]>([]);
   const [charsPerRow, setCharsPerRow] = useState<number>(61);
-  const [wordsByRow, setWordsByRow] = useState<string[][][]>([]);
+  // const [wordsByRow, setWordsByRow] = useState<string[][][]>([]);
+  const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
@@ -104,7 +105,8 @@ const Home: NextPage = () => {
   const splitToRows = (): void => {
     const rows: string[][][] = [];
     let row: string[][] = [];
-    let sum: number = 0;  
+    let sum: number = 0;
+
 
     for (let i = 0; i < words.length; i++) {
       sum += words[i].length + 1;
@@ -116,8 +118,16 @@ const Home: NextPage = () => {
         sum = words[i].length + 1;
       }
     }
-    setWordsByRow(rows);
-    console.log(rows);
+
+    const lastWords: string[][] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      lastWords.push(rows[i][rows[i].length - 1]);
+    }
+
+    setLastWordPerRow(lastWords);
+    console.log(lastWords);
+
   };
 
   const calculateCharsPerRow = (): void => {
