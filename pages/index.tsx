@@ -1,12 +1,13 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
-import { Words } from "../components/Words";
-import styles from "../styles/Home.module.css";
 import React, { useState, useEffect, useRef } from "react";
+import type { NextPage } from "next";
+import { Words } from "../components/Words";
 import { Input } from "../components/Input";
+import { Caret } from "../components/Caret";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { checkServerIdentity } from "tls";
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   const [allWords, setAllWords] = useState<string[][]>([]);
@@ -21,6 +22,8 @@ const Home: NextPage = () => {
   const [charsPerRow, setCharsPerRow] = useState<number>(61);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const [typedWords, setTypedWords] = useState<number>(0);
+  const [typedChars, setTypedChars] = useState<number>(0);
+  const [charsPerLine, setCharsPerLine] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
@@ -40,6 +43,7 @@ const Home: NextPage = () => {
     return letters;
   };
 
+  // CONVERTS ARRAY TO STRING
   const arrToStr = (str: string[]) => {
     let s: string = "";
     for (let i in str) {
@@ -48,6 +52,7 @@ const Home: NextPage = () => {
     return s;
   };
 
+  // GET 140 WORDS
   const getOneForty = (arr: string[][]): string[][] => {
     // const start: number = 50 * fiftyCount;
     const end: number = 140;
@@ -80,22 +85,14 @@ const Home: NextPage = () => {
     }
   };
 
-  const addWords = (): void => {
-    const w: string[][] = words;
-    const fifty = getOneForty(allWords);
-
-    for (let i = 0; i < 50; i++) {
-      w.push(fifty[i]);
-    }
-    setWords(w);
-  };
-
   // DETECTS KEYDOWN EVENT AND SETS currentLetterInput TO THE LETTER PRESSED
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     const word = e.currentTarget.value;
     const activeWordString = arrToStr(activeWord);
+    setCharsPerLine(typedChars + word.length);
+
     setInput(word.split(""));
 
     if (word === activeWordString + " ") {
@@ -107,6 +104,7 @@ const Home: NextPage = () => {
       setInput([]);
       deleteTopRow(word.slice(0, -1));
       setTypedWords(typed + 1);
+      setTypedChars((prev) => activeWordString.length + prev + 1)
       e.currentTarget.value = "";
     }
   };
@@ -138,6 +136,8 @@ const Home: NextPage = () => {
     setLastWordPerRow(lastWords);
   };
 
+  // DELETES THE FIRST ROW OF THE words ARRAY TO MAKE THE
+  // WORDS MOVE UP IN THE DISPLAY
   const deleteTopRow = (w: string): void => {
     const tempWords: string[][] = words;
     const lastWords: string[] = [];
@@ -160,10 +160,14 @@ const Home: NextPage = () => {
     for (let i = 0; i < index; i++) {
       tempWords.shift();
     }
+
     setWords(tempWords);
     setActiveIndex((idx) => idx - index);
   };
 
+  // CHANGES THE NUMBER OF CHARACTERS PER ROW
+  // DEPENDING ON THE WIDTH OF THE WINDOW
+  // 1 CHAR => 14 PIXELS
   const calculateCharsPerRow = (): void => {
     let chars: number;
     if (width != null) {
@@ -198,6 +202,7 @@ const Home: NextPage = () => {
         width: {width} ~ height: {height} ~ charsPerRow: {charsPerRow}
       </div>
       <div className='w-full h-screen flex flex-col items-center justify-center'>
+        <Caret charsPerLine={charsPerLine} loading={loading} error={error} />
         <div
           onClick={() => {
             inputRef.current?.focus();
