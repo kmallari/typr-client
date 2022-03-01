@@ -5,9 +5,9 @@ import { Words } from "../components/Words";
 import styles from "../styles/Home.module.css";
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "../components/Input";
+import useWindowDimensions from "../hooks/useWindowDimensions";
 
 const Home: NextPage = () => {
-  const [TwoDWords, setTwoDWords] = useState<string[][]>([]);
   const [words, setWords] = useState<string[][]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -16,7 +16,11 @@ const Home: NextPage = () => {
   const [input, setInput] = useState<string[]>([]);
   const [fiftyCount, setFiftyCount] = useState<number>(0);
   const [finishedWords, setFinishedWords] = useState<string[]>([]);
+  const [charsPerRow, setCharsPerRow] = useState<number>(61);
+  // const [wordsByRow, setWordsByRow] = useState<string[][][]>([]);
+  const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const { height, width } = useWindowDimensions();
 
   const splitTo2DArr = (input: string[]): string[][] => {
     // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
@@ -31,23 +35,6 @@ const Home: NextPage = () => {
         return letter + "";
       });
     });
-    return letters;
-  };
-
-  const splitToLetters = (input: string[]): string[] => {
-    // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
-    // AND SPLIT EACH WORD WITH A SPACE
-
-    let letters: string[] = [];
-    for (let i = 0; i < input.length; i++) {
-      for (let j = 0; j < input[i].length; j++) {
-        letters.push(input[i][j]);
-      }
-      if (i != input.length - 1) {
-        letters.push(" ");
-      }
-    }
-
     return letters;
   };
 
@@ -80,7 +67,7 @@ const Home: NextPage = () => {
         "https://5kg8owmfme.execute-api.ap-southeast-1.amazonaws.com/getWords"
       );
       const json: string[] = await response.json();
-      setTwoDWords(splitTo2DArr(json));
+
       setWords(getFifty(splitTo2DArr(json)));
       setActiveWord(getFifty(splitTo2DArr(json))[0]);
 
@@ -89,17 +76,6 @@ const Home: NextPage = () => {
       setError(true);
     }
   };
-
-  // GENERATE AN ARRAY OF UNIQUE RANDOM INTEGERS
-  const generateRandom = (length: number): number[] => {
-    let arr: number[] = [];
-    while (arr.length < length) {
-      let random = Math.floor(Math.random() * length);
-      if (arr.indexOf(random) === -1) arr.push(random);
-    }
-    return arr;
-  };
-  
 
   // DETECTS KEYDOWN EVENT AND SETS currentLetterInput TO THE LETTER PRESSED
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +90,6 @@ const Home: NextPage = () => {
     // console.log(finishedWords);
 
     // TO DO:
-    // ADD EXTRA LETTERS WHEN TYPING AFTER THE WORD
     // MOVE WORDS UP
 
     if (word === activeWordString + " ") {
@@ -127,14 +102,78 @@ const Home: NextPage = () => {
     }
   };
 
+  const splitToRows = (): void => {
+    const rows: string[][][] = [];
+    let row: string[][] = [];
+    let sum: number = 0;
+
+    for (let i = 0; i < words.length; i++) {
+      sum += words[i].length + 1;
+      row.push(words[i]);
+      if (sum - 1 >= charsPerRow) {
+        row.pop();
+        rows.push(row);
+        row = [words[i]];
+        sum = words[i].length + 1;
+      }
+    }
+
+    const lastWords: string[][] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      lastWords.push(rows[i][rows[i].length - 1]);
+    }
+
+    setLastWordPerRow(lastWords);
+    console.log(lastWords);
+  };
+
+  const calculateCharsPerRow = (): void => {
+    // MAX 61 CHARS
+    // 1 LETTER = 16 PIXELS
+    // STARTS MOVING AT 991 WIDTH => 991 = 61 characters
+    // 976
+    // 975
+    // 959 ETC... 504
+    // FIX THIS SHIT
+    let chars: number;
+    if (width != null) {
+      if (width > 440 && width <= 990) {
+        chars = 27 + Math.floor((width - 440) / 16);
+        // Math.floor((width - 440) / 160) +
+        // Math.floor((width - 440) / 1600);
+        setCharsPerRow(chars);
+      } else if (width > 990) {
+        setCharsPerRow(62);
+      }
+
+      // if (width <= 990) {
+      //   chars = Math.floor(width / 16) - 4
+      //   setCharsPerRow(chars)
+      // } else if (width > 990) {
+      //   setCharsPerRow(60);
+      // }
+    }
+  };
+
+  useEffect(() => {
+    calculateCharsPerRow();
+    splitToRows();
+  }, [width]);
+
   // FETCH DATA WHEN COMPONENTS MOUNTS
   useEffect(() => {
     fetchData();
     inputRef.current?.focus();
+    calculateCharsPerRow();
+    splitToRows();
   }, []);
 
   return (
     <div className='m-0 bg-slate-800 h-screen w-full'>
+      <div className='text-white'>
+        width: {width} ~ height: {height} ~ charsPerRow: {charsPerRow}
+      </div>
       <div className='w-full h-screen flex flex-col items-center justify-center'>
         <div
           onClick={() => {
