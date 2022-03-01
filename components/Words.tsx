@@ -25,7 +25,10 @@ export const Words: React.FC<Words> = ({
   // console.log("curr", currentWordIndex);
 
   return (
-    <div className='w-5/6 h-28 xl:w-7/12 absolute text-2xl overflow-hidden select-none leading-relaxed font-jb_mono text-slate-600 flex flex-row flex-wrap left-0 right-0 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto'>
+    <div
+      id='words-wrapper'
+      className='w-11/12 lg:max-w-4xl h-28 absolute text-2xl overflow-hidden select-none leading-relaxed font-jb_mono text-slate-600 flex flex-row flex-wrap left-0 right-0 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto'
+    >
       {
         // IF LOADING IS TRUE, SHOW "Loading..."
         loading
@@ -44,7 +47,7 @@ export const Words: React.FC<Words> = ({
                     // IF THE WORD IS ALREADY IN FINISHED WORDS,
                     // COLOR IT GREEN.
                     finishedWords.includes(arrToStr(word))
-                      ? "text-green-500"
+                      ? "text-green-500 font-bold"
                       : ""
                   }`}
                 >
@@ -61,7 +64,7 @@ export const Words: React.FC<Words> = ({
                             // COLOR IT RED, WITH AN UNDERLINE.
                             activeWord[j] === input[j] &&
                             arrToStr(word) === arrToStr(activeWord)
-                              ? "text-green-500"
+                              ? "text-green-500 font-bold"
                               : activeWord[j] != input[j] &&
                                 input[j] != null &&
                                 arrToStr(word) === arrToStr(activeWord)

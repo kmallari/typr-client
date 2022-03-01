@@ -107,6 +107,7 @@ const Home: NextPage = () => {
     let row: string[][] = [];
     let sum: number = 0;
 
+
     for (let i = 0; i < words.length; i++) {
       sum += words[i].length + 1;
       row.push(words[i]);
@@ -126,6 +127,7 @@ const Home: NextPage = () => {
 
     setLastWordPerRow(lastWords);
     console.log(lastWords);
+
   };
 
   const calculateCharsPerRow = (): void => {
