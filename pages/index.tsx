@@ -6,18 +6,21 @@ import styles from "../styles/Home.module.css";
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "../components/Input";
 import useWindowDimensions from "../hooks/useWindowDimensions";
+import { checkServerIdentity } from "tls";
 
 const Home: NextPage = () => {
+  const [allWords, setAllWords] = useState<string[][]>([]);
   const [words, setWords] = useState<string[][]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [activeWord, setActiveWord] = useState<string[]>([]);
   const [input, setInput] = useState<string[]>([]);
-  const [fiftyCount, setFiftyCount] = useState<number>(0);
+  // const [fiftyCount, setFiftyCount] = useState<number>(0);
   const [finishedWords, setFinishedWords] = useState<string[]>([]);
   const [charsPerRow, setCharsPerRow] = useState<number>(61);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
+  const [typedWords, setTypedWords] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
@@ -45,16 +48,16 @@ const Home: NextPage = () => {
     return s;
   };
 
-  const getFifty = (arr: string[][]): string[][] => {
-    const start: number = 50 * fiftyCount;
-    const end: number = start + 50;
+  const getOneForty = (arr: string[][]): string[][] => {
+    // const start: number = 50 * fiftyCount;
+    const end: number = 140;
     const a: string[][] = [];
 
-    for (let i = start; i < end; i++) {
+    for (let i = 0; i < end; i++) {
       a.push(arr[i]);
     }
 
-    setFiftyCount((old) => old + 1);
+    // setFiftyCount((old) => old + 1);
 
     return a;
   };
@@ -67,13 +70,24 @@ const Home: NextPage = () => {
       );
       const json: string[] = await response.json();
 
-      setWords(getFifty(splitTo2DArr(json)));
-      setActiveWord(getFifty(splitTo2DArr(json))[0]);
+      setAllWords(splitTo2DArr(json));
+      setWords(getOneForty(splitTo2DArr(json)));
+      setActiveWord(getOneForty(splitTo2DArr(json))[0]);
 
       setLoading(false);
     } catch (error) {
       setError(true);
     }
+  };
+
+  const addWords = (): void => {
+    const w: string[][] = words;
+    const fifty = getOneForty(allWords);
+
+    for (let i = 0; i < 50; i++) {
+      w.push(fifty[i]);
+    }
+    setWords(w);
   };
 
   // DETECTS KEYDOWN EVENT AND SETS currentLetterInput TO THE LETTER PRESSED
@@ -84,20 +98,15 @@ const Home: NextPage = () => {
     const activeWordString = arrToStr(activeWord);
     setInput(word.split(""));
 
-    // console.log("word", word);
-    // console.log("activeWordString", activeWordString);
-    // console.log(finishedWords);
-
-    // TO DO:
-    // MOVE WORDS UP
-
     if (word === activeWordString + " ") {
+      const typed = typedWords;
       const idx = activeIndex + 1;
       setFinishedWords((fw) => [...fw, arrToStr(activeWord)]);
       setActiveIndex((idx) => idx + 1);
       setActiveWord(words[idx]);
       setInput([]);
       deleteTopRow(word.slice(0, -1));
+      setTypedWords(typed + 1);
       e.currentTarget.value = "";
     }
   };
@@ -156,30 +165,14 @@ const Home: NextPage = () => {
   };
 
   const calculateCharsPerRow = (): void => {
-    // MAX 61 CHARS
-    // 1 LETTER = 16 PIXELS
-    // STARTS MOVING AT 991 WIDTH => 991 = 61 characters
-    // 976
-    // 975
-    // 959 ETC... 504
-    // FIX THIS SHIT
     let chars: number;
     if (width != null) {
       if (width > 440 && width <= 990) {
         chars = 27 + Math.floor((width - 440) / 16);
-        // Math.floor((width - 440) / 160) +
-        // Math.floor((width - 440) / 1600);
         setCharsPerRow(chars);
       } else if (width > 990) {
         setCharsPerRow(62);
       }
-
-      // if (width <= 990) {
-      //   chars = Math.floor(width / 16) - 4
-      //   setCharsPerRow(chars)
-      // } else if (width > 990) {
-      //   setCharsPerRow(60);
-      // }
     }
   };
 
