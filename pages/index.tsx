@@ -149,9 +149,9 @@ const Home: NextPage = () => {
 
     let index: number = 0;
     if (lastWords.indexOf(w) === 0) {
-      setIsCaretMiddle(true);
       setTypedChars(0);
       setCharsPerRow(0);
+      setIsCaretMiddle(true);
     } else if (lastWords.indexOf(w) > 0) {
       while (true) {
         if (words[index].join("") === lastWords[lastWords.indexOf(w) - 1]) {
@@ -205,9 +205,6 @@ const Home: NextPage = () => {
 
   return (
     <div className='m-0 bg-slate-800 h-screen w-full'>
-      <div className='text-white'>
-        width: {width} ~ height: {height} ~ charsPerRow: {charsPerRow}
-      </div>
       <div className='w-full h-screen flex flex-col items-center justify-center'>
         <Caret
           isCaretMiddle={isCaretMiddle}

@@ -17,21 +17,27 @@ export const Caret: React.FC<InputProps> = ({
   const [prevChars, setPrevChars] = useState<number>(0);
   const [currChars, setCurrChars] = useState<number>(0);
 
-  let x: number[] = [];
-
   useEffect(() => {
+    if (charsPerLine === 0) {
+      setCurrChars(0);
+    }
     setCurrChars(charsPerLine);
     setPrevChars(currChars);
   }, [charsPerLine]);
 
-  x = [prevChars * 14.43, currChars * 14.43];
+  useEffect(() => {
+    setCurrChars(0);
+  }, [isCaretMiddle])
 
   const variants = {
     started: { opacity: [1, 1, 1] },
     standby: { opacity: [1, 0, 1] },
   };
 
-  console.log(isCaretMiddle);
+  console.log("🚀 ~ file: Caret.tsx ~ line 18 ~ prevChars", prevChars);
+  console.log("🚀 ~ file: Caret.tsx ~ line 19 ~ currChars", currChars);
+
+  console.log(charsPerLine);
 
   return (
     <motion.div
@@ -50,7 +56,7 @@ export const Caret: React.FC<InputProps> = ({
           <motion.div
             initial={false}
             animate={{
-              x: x,
+              x: [prevChars * 14.43, currChars * 14.43],
             }}
             transition={{
               duration: 0.1,
