@@ -24,6 +24,7 @@ const Home: NextPage = () => {
   const [typedWords, setTypedWords] = useState<number>(0);
   const [typedChars, setTypedChars] = useState<number>(0);
   const [charsPerLine, setCharsPerLine] = useState<number>(0);
+  const [isCaretMiddle, setIsCaretMiddle] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
@@ -102,9 +103,9 @@ const Home: NextPage = () => {
       setActiveIndex((idx) => idx + 1);
       setActiveWord(words[idx]);
       setInput([]);
-      deleteTopRow(word.slice(0, -1));
       setTypedWords(typed + 1);
-      setTypedChars((prev) => activeWordString.length + prev + 1)
+      setTypedChars((prev) => activeWordString.length + prev + 1);
+      deleteTopRow(word.slice(0, -1));
       e.currentTarget.value = "";
     }
   };
@@ -147,7 +148,11 @@ const Home: NextPage = () => {
     }
 
     let index: number = 0;
-    if (lastWords.indexOf(w) > 0) {
+    if (lastWords.indexOf(w) === 0) {
+      setIsCaretMiddle(true);
+      setTypedChars(0);
+      setCharsPerRow(0);
+    } else if (lastWords.indexOf(w) > 0) {
       while (true) {
         if (words[index].join("") === lastWords[lastWords.indexOf(w) - 1]) {
           index++;
@@ -155,6 +160,8 @@ const Home: NextPage = () => {
         }
         index++;
       }
+      setTypedChars(0);
+      setCharsPerLine(0);
     }
 
     for (let i = 0; i < index; i++) {
@@ -202,7 +209,12 @@ const Home: NextPage = () => {
         width: {width} ~ height: {height} ~ charsPerRow: {charsPerRow}
       </div>
       <div className='w-full h-screen flex flex-col items-center justify-center'>
-        <Caret charsPerLine={charsPerLine} loading={loading} error={error} />
+        <Caret
+          isCaretMiddle={isCaretMiddle}
+          charsPerLine={charsPerLine}
+          loading={loading}
+          error={error}
+        />
         <div
           onClick={() => {
             inputRef.current?.focus();

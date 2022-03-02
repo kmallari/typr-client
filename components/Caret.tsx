@@ -5,12 +5,14 @@ interface InputProps {
   charsPerLine: number;
   loading: boolean;
   error: boolean;
+  isCaretMiddle: boolean;
 }
 
 export const Caret: React.FC<InputProps> = ({
   charsPerLine,
   loading,
   error,
+  isCaretMiddle,
 }) => {
   const [prevChars, setPrevChars] = useState<number>(0);
   const [currChars, setCurrChars] = useState<number>(0);
@@ -20,7 +22,6 @@ export const Caret: React.FC<InputProps> = ({
   useEffect(() => {
     setCurrChars(charsPerLine);
     setPrevChars(currChars);
-    
   }, [charsPerLine]);
 
   x = [prevChars * 14.43, currChars * 14.43];
@@ -29,6 +30,8 @@ export const Caret: React.FC<InputProps> = ({
     started: { opacity: [1, 1, 1] },
     standby: { opacity: [1, 0, 1] },
   };
+
+  console.log(isCaretMiddle);
 
   return (
     <motion.div
@@ -52,7 +55,9 @@ export const Caret: React.FC<InputProps> = ({
             transition={{
               duration: 0.1,
             }}
-            className={`absolute top-1 w-0.5 h-8 rounded-lg bg-green-400`}
+            className={`absolute w-0.5 h-8 rounded-lg bg-green-400 ${
+              isCaretMiddle ? "top-11" : "top-1"
+            }`}
           />
         )
       }

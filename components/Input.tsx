@@ -13,7 +13,7 @@ export const Input: React.FC<InputProps> = ({ onChangeHandler, inputRef }) => {
   return (
     <div>
       <input
-        // maxLength={24}
+        maxLength={24}
         autoComplete="off"
         className='absolute -top-96'
         ref={inputRef}
