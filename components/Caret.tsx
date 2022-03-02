@@ -25,19 +25,10 @@ export const Caret: React.FC<InputProps> = ({
     setPrevChars(currChars);
   }, [charsPerLine]);
 
-  useEffect(() => {
-    setCurrChars(0);
-  }, [isCaretMiddle])
-
   const variants = {
     started: { opacity: [1, 1, 1] },
     standby: { opacity: [1, 0, 1] },
   };
-
-  console.log("🚀 ~ file: Caret.tsx ~ line 18 ~ prevChars", prevChars);
-  console.log("🚀 ~ file: Caret.tsx ~ line 19 ~ currChars", currChars);
-
-  console.log(charsPerLine);
 
   return (
     <motion.div

@@ -3,11 +3,13 @@ import type { NextPage } from "next";
 import { Words } from "../components/Words";
 import { Input } from "../components/Input";
 import { Caret } from "../components/Caret";
+import { Timer } from "../components/Timer";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { checkServerIdentity } from "tls";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
+import { TimerOptions } from "../components/TimerOptions";
 
 const Home: NextPage = () => {
   const [allWords, setAllWords] = useState<string[][]>([]);
@@ -22,11 +24,15 @@ const Home: NextPage = () => {
   const [charsPerRow, setCharsPerRow] = useState<number>(61);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const [typedWords, setTypedWords] = useState<number>(0);
-  const [typedChars, setTypedChars] = useState<number>(0);
+  const [typedCharsPerRow, setTypedCharsPerRow] = useState<number>(0);
   const [charsPerLine, setCharsPerLine] = useState<number>(0);
   const [isCaretMiddle, setIsCaretMiddle] = useState<boolean>(false);
+  const [started, setStarted] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(30);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
+
+  console.log("🚀 ~ file: index.tsx ~ line 26 ~ typedWords", typedWords);
 
   const splitTo2DArr = (input: string[]): string[][] => {
     // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
@@ -91,12 +97,17 @@ const Home: NextPage = () => {
     e.preventDefault();
 
     const word = e.currentTarget.value;
+
+    if (word.length > 0 && started === false && timer != 0) {
+      setStarted(true);
+    }
+
     const activeWordString = arrToStr(activeWord);
-    setCharsPerLine(typedChars + word.length);
+    setCharsPerLine(typedCharsPerRow + word.length);
 
     setInput(word.split(""));
 
-    if (word === activeWordString + " ") {
+    if (word === activeWordString + " " && started && timer != 0) {
       const typed = typedWords;
       const idx = activeIndex + 1;
       setFinishedWords((fw) => [...fw, arrToStr(activeWord)]);
@@ -104,7 +115,7 @@ const Home: NextPage = () => {
       setActiveWord(words[idx]);
       setInput([]);
       setTypedWords(typed + 1);
-      setTypedChars((prev) => activeWordString.length + prev + 1);
+      setTypedCharsPerRow((prev) => activeWordString.length + prev + 1);
       deleteTopRow(word.slice(0, -1));
       e.currentTarget.value = "";
     }
@@ -149,8 +160,8 @@ const Home: NextPage = () => {
 
     let index: number = 0;
     if (lastWords.indexOf(w) === 0) {
-      setTypedChars(0);
-      setCharsPerRow(0);
+      setTypedCharsPerRow(0);
+      setCharsPerLine(0);
       setIsCaretMiddle(true);
     } else if (lastWords.indexOf(w) > 0) {
       while (true) {
@@ -160,7 +171,7 @@ const Home: NextPage = () => {
         }
         index++;
       }
-      setTypedChars(0);
+      setTypedCharsPerRow(0);
       setCharsPerLine(0);
     }
 
@@ -203,9 +214,32 @@ const Home: NextPage = () => {
     splitToRows();
   }, [words]);
 
+  useEffect(() => {
+    let tempStarted = started;
+    if (timer === 0) {
+      console.log("DOES THIS RUN?");
+      tempStarted = false;
+    }
+    setStarted(tempStarted);
+    console.log(
+      "🚀 ~ file: index.tsx ~ line 224 ~ useEffect ~ started",
+      started
+    );
+    console.log("🚀 ~ file: index.tsx ~ line 225 ~ useEffect ~ timer", timer);
+    console.log(
+      "🚀 ~ file: index.tsx ~ line 222 ~ useEffect ~ timer === 0",
+      timer === 0
+    );
+  }, [timer]);
+
   return (
     <div className='m-0 bg-slate-800 h-screen w-full'>
       <div className='w-full h-screen flex flex-col items-center justify-center'>
+        {started ? (
+          <Timer started={started} timer={timer} setTimer={setTimer} />
+        ) : null}
+        {started ? null : <TimerOptions timer={timer} setTimer={setTimer} />}
+
         <Caret
           isCaretMiddle={isCaretMiddle}
           charsPerLine={charsPerLine}
@@ -229,7 +263,14 @@ const Home: NextPage = () => {
             finishedWords={finishedWords}
           />
         </div>
-        <Input onChangeHandler={onChangeHandler} inputRef={inputRef} />
+        <Input
+          onChangeHandler={onChangeHandler}
+          inputRef={inputRef}
+          typedCharsPerRow={typedCharsPerRow}
+          charsPerRow={charsPerRow}
+          started={started}
+          timer={timer}
+        />
       </div>
     </div>
   );
