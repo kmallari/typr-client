@@ -1,12 +1,12 @@
 import React, { useEffect, useState, MutableRefObject } from "react";
 import { ThreeDots } from "react-loader-spinner";
+import { motion } from "framer-motion";
 
 interface Words {
   words: string[][];
   loading: boolean;
   error: boolean;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  inputRef: MutableRefObject<HTMLInputElement | null>;
   activeWord: string[];
   input: string[];
   arrToStr: (s: string[]) => string;
@@ -42,7 +42,10 @@ export const Words: React.FC<Words> = ({
           words.map((word: string[], i: number) => {
             return (
               // THIS DIV IS THE DIV PER BOX
-              <div
+              <motion.div
+                animate={{
+                  opacity: [0, 1],
+                }}
                 key={i}
                 className={`flex flex-row flex-wrap ${
                   // IF THE WORD IS ALREADY IN FINISHED WORDS,
@@ -97,7 +100,7 @@ export const Words: React.FC<Words> = ({
                     })
                   : ""}
                 <span>&nbsp;</span>
-              </div>
+              </motion.div>
             );
           })
         ) : (

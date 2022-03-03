@@ -21,7 +21,7 @@ export const Input: React.FC<InputProps> = ({
   timer,
 }) => {
   return (
-    <>
+    <form>
       <input
         // MAX LENGTH OF THE INPUT CAN ONLY BE
         // BELOW THE MAX CHARACTERS PER ROW
@@ -37,6 +37,6 @@ export const Input: React.FC<InputProps> = ({
         onChange={onChangeHandler}
         disabled={started === false && timer === 0 ? true : false}
       />
-    </>
+    </form>
   );
 };

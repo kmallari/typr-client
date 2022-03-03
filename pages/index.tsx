@@ -10,6 +10,7 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { TimerOptions } from "../components/TimerOptions";
+import { Statistics } from "../components/Statistics";
 
 const Home: NextPage = () => {
   const [allWords, setAllWords] = useState<string[][]>([]);
@@ -24,15 +25,18 @@ const Home: NextPage = () => {
   const [charsPerRow, setCharsPerRow] = useState<number>(61);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const [typedWords, setTypedWords] = useState<number>(0);
+  const [typedLetters, setTypedLetters] = useState<number>(0);
   const [typedCharsPerRow, setTypedCharsPerRow] = useState<number>(0);
   const [charsPerLine, setCharsPerLine] = useState<number>(0);
   const [isCaretMiddle, setIsCaretMiddle] = useState<boolean>(false);
   const [started, setStarted] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(30);
+  const [constTimer, setConstTimer] = useState<number>(30);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
-  console.log("🚀 ~ file: index.tsx ~ line 26 ~ typedWords", typedWords);
+  console.log("🚀 ~ file: index.tsx ~ line 315 ~ timer", timer)
+  console.log("🚀 ~ file: index.tsx ~ line 40 ~ started", started)
 
   const splitTo2DArr = (input: string[]): string[][] => {
     // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
@@ -89,6 +93,20 @@ const Home: NextPage = () => {
       setLoading(false);
     } catch (error) {
       setError(true);
+    }
+  };
+
+  const typeAgainHandler = () => {
+    setTimer(constTimer);
+    setIsCaretMiddle(false);
+    setTypedCharsPerRow(0);
+    setCharsPerLine(0);
+    setActiveIndex(0);
+    setActiveWord([]);
+    setFinishedWords([]);
+    setCharsPerLine(0);
+    if (inputRef.current?.value != null) {
+      inputRef.current.value = "";
     }
   };
 
@@ -207,6 +225,8 @@ const Home: NextPage = () => {
   useEffect(() => {
     fetchData();
     inputRef.current?.focus();
+    calculateCharsPerRow();
+    splitToRows();
   }, []);
 
   useEffect(() => {
@@ -217,19 +237,20 @@ const Home: NextPage = () => {
   useEffect(() => {
     let tempStarted = started;
     if (timer === 0) {
-      console.log("DOES THIS RUN?");
+      fetchData();
       tempStarted = false;
+      let sum: number = 0;
+      for (let i = 0; i < typedWords; i++) {
+        sum += allWords[i].length;
+      }
+      setTypedLetters(sum);
+      inputRef.current?.focus();
+      calculateCharsPerRow();
+      splitToRows();
+      setInput([]);
+      setFinishedWords([]);
     }
     setStarted(tempStarted);
-    console.log(
-      "🚀 ~ file: index.tsx ~ line 224 ~ useEffect ~ started",
-      started
-    );
-    console.log("🚀 ~ file: index.tsx ~ line 225 ~ useEffect ~ timer", timer);
-    console.log(
-      "🚀 ~ file: index.tsx ~ line 222 ~ useEffect ~ timer === 0",
-      timer === 0
-    );
   }, [timer]);
 
   return (
@@ -238,30 +259,47 @@ const Home: NextPage = () => {
         {started ? (
           <Timer started={started} timer={timer} setTimer={setTimer} />
         ) : null}
-        {started ? null : <TimerOptions timer={timer} setTimer={setTimer} />}
+        {started ? null : (
+          <TimerOptions
+            setConstTimer={setConstTimer}
+            timer={timer}
+            setTimer={setTimer}
+            constTimer={constTimer}
+          />
+        )}
 
-        <Caret
-          isCaretMiddle={isCaretMiddle}
-          charsPerLine={charsPerLine}
-          loading={loading}
-          error={error}
-        />
         <div
           onClick={() => {
             inputRef.current?.focus();
           }}
         >
-          <Words
-            words={words}
-            loading={loading}
-            error={error}
-            inputRef={inputRef}
-            onChangeHandler={onChangeHandler}
-            activeWord={activeWord}
-            input={input}
-            arrToStr={arrToStr}
-            finishedWords={finishedWords}
-          />
+          {timer != 0 ? (
+            <>
+              <Words
+                words={words}
+                loading={loading}
+                error={error}
+                onChangeHandler={onChangeHandler}
+                activeWord={activeWord}
+                input={input}
+                arrToStr={arrToStr}
+                finishedWords={finishedWords}
+              />
+              <Caret
+                isCaretMiddle={isCaretMiddle}
+                charsPerLine={charsPerLine}
+                loading={loading}
+                error={error}
+              />
+            </>
+          ) : (
+            <Statistics
+              constTimer={constTimer}
+              typedWords={typedWords}
+              typedLetters={typedLetters}
+              typeAgainHandler={typeAgainHandler}
+            />
+          )}
         </div>
         <Input
           onChangeHandler={onChangeHandler}
