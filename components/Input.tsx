@@ -20,6 +20,9 @@ export const Input: React.FC<InputProps> = ({
   started,
   timer,
 }) => {
+  // console.log("🚀 ~ file: Input.tsx ~ line 33 ~ charsPerRow", charsPerRow)
+  // console.log("🚀 ~ file: Input.tsx ~ line 34 ~ typedCharsPerRow", typedCharsPerRow)
+
   return (
     <form>
       <input

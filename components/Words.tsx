@@ -22,9 +22,6 @@ export const Words: React.FC<Words> = ({
   arrToStr,
   finishedWords,
 }) => {
-  // console.log("joined", words);
-  // console.log("curr", currentWordIndex);
-
   return (
     <div
       id='words-wrapper'
@@ -43,9 +40,9 @@ export const Words: React.FC<Words> = ({
             return (
               // THIS DIV IS THE DIV PER BOX
               <motion.div
-                animate={{
-                  opacity: [0, 1],
-                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 key={i}
                 className={`flex flex-row flex-wrap ${
                   // IF THE WORD IS ALREADY IN FINISHED WORDS,

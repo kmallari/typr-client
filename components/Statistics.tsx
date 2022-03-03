@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface StatisticsProps {
   constTimer: number;
@@ -14,7 +15,12 @@ export const Statistics: React.FC<StatisticsProps> = ({
   typeAgainHandler,
 }) => {
   return (
-    <div className='w-11/12 lg:max-w-4xl h-28 absolute left-0 right-0 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto flex flex-row items-center justify-between font-jb_mono gap-2 sm:gap-10'>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className='w-11/12 lg:max-w-4xl h-28 absolute left-0 right-0 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto flex flex-row items-center justify-between font-jb_mono gap-2 sm:gap-10'
+    >
       <div className='flex flex-col h-full items-start justify-center text-slate-600'>
         <div className='text-3xl md:text-6xl font-bold text-green-500'>
           {typedWords}
@@ -39,6 +45,6 @@ export const Statistics: React.FC<StatisticsProps> = ({
       >
         agane
       </button>
-    </div>
+    </motion.div>
   );
 };

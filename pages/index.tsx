@@ -12,6 +12,12 @@ import styles from "../styles/Home.module.css";
 import { TimerOptions } from "../components/TimerOptions";
 import { Statistics } from "../components/Statistics";
 
+/*
+TO DO
+  - When on stats and time changed is clicked, reset caret
+  - focus on input after clicking agane
+*/
+
 const Home: NextPage = () => {
   const [allWords, setAllWords] = useState<string[][]>([]);
   const [words, setWords] = useState<string[][]>([]);
@@ -35,8 +41,8 @@ const Home: NextPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
-  console.log("🚀 ~ file: index.tsx ~ line 315 ~ timer", timer)
-  console.log("🚀 ~ file: index.tsx ~ line 40 ~ started", started)
+  // console.log("🚀 ~ file: index.tsx ~ line 315 ~ timer", timer)
+  // console.log("🚀 ~ file: index.tsx ~ line 40 ~ started", started)
 
   const splitTo2DArr = (input: string[]): string[][] => {
     // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
@@ -102,12 +108,15 @@ const Home: NextPage = () => {
     setTypedCharsPerRow(0);
     setCharsPerLine(0);
     setActiveIndex(0);
-    setActiveWord([]);
     setFinishedWords([]);
     setCharsPerLine(0);
+    setActiveWord(words[activeIndex]);
     if (inputRef.current?.value != null) {
       inputRef.current.value = "";
     }
+    inputRef.current?.focus();
+
+    setTypedWords(0);
   };
 
   // DETECTS KEYDOWN EVENT AND SETS currentLetterInput TO THE LETTER PRESSED
@@ -237,7 +246,8 @@ const Home: NextPage = () => {
   useEffect(() => {
     let tempStarted = started;
     if (timer === 0) {
-      fetchData();
+      setAllWords([]);
+      setWords([]);
       tempStarted = false;
       let sum: number = 0;
       for (let i = 0; i < typedWords; i++) {
@@ -245,10 +255,13 @@ const Home: NextPage = () => {
       }
       setTypedLetters(sum);
       inputRef.current?.focus();
+      setActiveIndex(0);
       calculateCharsPerRow();
       splitToRows();
       setInput([]);
       setFinishedWords([]);
+      setTypedCharsPerRow(0);
+      fetchData();
     }
     setStarted(tempStarted);
   }, [timer]);
