@@ -41,9 +41,9 @@ export const Statistics: React.FC<StatisticsProps> = ({
       </div>
       <button
         onClick={typeAgainHandler}
-        className='bg-slate-700 h-1/2 p-4 rounded-xl font-bold pointer hover:bg-slate-600 text-slate-400 hover:text-green-500 transition-all'
+        className='bg-slate-700 md:h-1/2 p-4 rounded-xl font-bold pointer hover:bg-slate-600 text-slate-400 hover:text-green-500 transition-all'
       >
-        agane
+        go again
       </button>
     </motion.div>
   );

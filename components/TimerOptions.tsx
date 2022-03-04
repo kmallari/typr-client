@@ -6,6 +6,9 @@ interface TimerOptionsProps {
   setTimer: React.Dispatch<React.SetStateAction<number>>;
   setConstTimer: React.Dispatch<React.SetStateAction<number>>;
   constTimer: number;
+  setCharsPerLine: React.Dispatch<React.SetStateAction<number>>;
+  setTypedCharsPerRow: React.Dispatch<React.SetStateAction<number>>;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
 }
 
 export const TimerOptions: React.FC<TimerOptionsProps> = ({
@@ -13,10 +16,20 @@ export const TimerOptions: React.FC<TimerOptionsProps> = ({
   setTimer,
   setConstTimer,
   constTimer,
+  setCharsPerLine,
+  setTypedCharsPerRow,
+  inputRef,
 }) => {
   const handleClick = (time: number): void => {
     setTimer(time);
     setConstTimer(time);
+    setCharsPerLine(0);
+    setTypedCharsPerRow(0);
+    if (inputRef.current?.value != null) {
+      inputRef.current.value = "";
+      inputRef.current?.focus();
+    }
+    inputRef.current?.focus();
   };
 
   return (

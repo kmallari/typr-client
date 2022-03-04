@@ -4,18 +4,22 @@ import { Words } from "../components/Words";
 import { Input } from "../components/Input";
 import { Caret } from "../components/Caret";
 import { Timer } from "../components/Timer";
+import { TimerOptions } from "../components/TimerOptions";
+import { Statistics } from "../components/Statistics";
+import { Error } from "../components/Error";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { checkServerIdentity } from "tls";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { TimerOptions } from "../components/TimerOptions";
-import { Statistics } from "../components/Statistics";
 
 /*
 TO DO
-  - When on stats and time changed is clicked, reset caret
   - focus on input after clicking agane
+
+KNOWN PROBLEMS
+  - lastWordPerRow does not change when window is maximized
+  - caret does not follow the last word when resizing window during typing test
 */
 
 const Home: NextPage = () => {
@@ -38,6 +42,7 @@ const Home: NextPage = () => {
   const [started, setStarted] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(30);
   const [constTimer, setConstTimer] = useState<number>(30);
+  const [widthError, setWidthError] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
 
@@ -104,7 +109,6 @@ const Home: NextPage = () => {
 
   const typeAgainHandler = () => {
     setTimer(constTimer);
-    setIsCaretMiddle(false);
     setTypedCharsPerRow(0);
     setCharsPerLine(0);
     setActiveIndex(0);
@@ -228,6 +232,15 @@ const Home: NextPage = () => {
   useEffect(() => {
     calculateCharsPerRow();
     splitToRows();
+    if (timer != 0 && started) {
+      // maybe add a modal saying "Don't resize the window while typing"
+      setTimer(0);
+      setStarted(false);
+      setWidthError(true);
+      setTimeout(() => {
+        setWidthError(false);
+      }, 2500);
+    }
   }, [width]);
 
   // FETCH DATA WHEN COMPONENTS MOUNTS
@@ -246,14 +259,17 @@ const Home: NextPage = () => {
   useEffect(() => {
     let tempStarted = started;
     if (timer === 0) {
-      setAllWords([]);
-      setWords([]);
       tempStarted = false;
       let sum: number = 0;
+
+      // COUNT NUMBER OF CHARACTERS TYPED
       for (let i = 0; i < typedWords; i++) {
         sum += allWords[i].length;
       }
       setTypedLetters(sum);
+
+      // RESET THE STATES
+      setIsCaretMiddle(false);
       inputRef.current?.focus();
       setActiveIndex(0);
       calculateCharsPerRow();
@@ -278,9 +294,11 @@ const Home: NextPage = () => {
             timer={timer}
             setTimer={setTimer}
             constTimer={constTimer}
+            setCharsPerLine={setCharsPerLine}
+            setTypedCharsPerRow={setTypedCharsPerRow}
+            inputRef={inputRef}
           />
         )}
-
         <div
           onClick={() => {
             inputRef.current?.focus();
@@ -323,6 +341,7 @@ const Home: NextPage = () => {
           timer={timer}
         />
       </div>
+      <Error widthError={widthError} />
     </div>
   );
 };

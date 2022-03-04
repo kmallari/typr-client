@@ -20,16 +20,13 @@ export const Input: React.FC<InputProps> = ({
   started,
   timer,
 }) => {
-  // console.log("🚀 ~ file: Input.tsx ~ line 33 ~ charsPerRow", charsPerRow)
-  // console.log("🚀 ~ file: Input.tsx ~ line 34 ~ typedCharsPerRow", typedCharsPerRow)
-
   return (
-    <form>
+    <>
       <input
         // MAX LENGTH OF THE INPUT CAN ONLY BE
         // BELOW THE MAX CHARACTERS PER ROW
         maxLength={
-          charsPerRow - typedCharsPerRow >= 24
+          charsPerRow - typedCharsPerRow > 26
             ? 24
             : charsPerRow - typedCharsPerRow
         }
@@ -40,6 +37,6 @@ export const Input: React.FC<InputProps> = ({
         onChange={onChangeHandler}
         disabled={started === false && timer === 0 ? true : false}
       />
-    </form>
+    </>
   );
 };

@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         jb_mono: ["JetBrains Mono", "monospace"],
+        rubik: ["Rubik", "serif"]
        },
     },
   },
