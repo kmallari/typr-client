@@ -7,6 +7,7 @@ import { Timer } from "../components/Timer";
 import { TimerOptions } from "../components/TimerOptions";
 import { Statistics } from "../components/Statistics";
 import { Error } from "../components/Error";
+import { Navbar } from "../components/Navbar";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { checkServerIdentity } from "tls";
 import Head from "next/head";
@@ -230,8 +231,6 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    calculateCharsPerRow();
-    splitToRows();
     if (timer != 0 && started) {
       // maybe add a modal saying "Don't resize the window while typing"
       setTimer(0);
@@ -250,6 +249,11 @@ const Home: NextPage = () => {
     calculateCharsPerRow();
     splitToRows();
   }, []);
+
+  useEffect(() => {
+    calculateCharsPerRow();
+    splitToRows();
+  }, [started]);
 
   useEffect(() => {
     calculateCharsPerRow();
@@ -283,66 +287,73 @@ const Home: NextPage = () => {
   }, [timer]);
 
   return (
-    <div className='m-0 bg-slate-800 h-screen w-full'>
-      <div className='w-full h-screen flex flex-col items-center justify-center'>
-        {started ? (
-          <Timer started={started} timer={timer} setTimer={setTimer} />
-        ) : null}
-        {started ? null : (
-          <TimerOptions
-            setConstTimer={setConstTimer}
-            timer={timer}
-            setTimer={setTimer}
-            constTimer={constTimer}
-            setCharsPerLine={setCharsPerLine}
-            setTypedCharsPerRow={setTypedCharsPerRow}
-            inputRef={inputRef}
-          />
-        )}
-        <div
-          onClick={() => {
-            inputRef.current?.focus();
-          }}
-        >
-          {timer != 0 ? (
-            <>
-              <Words
-                words={words}
-                loading={loading}
-                error={error}
-                onChangeHandler={onChangeHandler}
-                activeWord={activeWord}
-                input={input}
-                arrToStr={arrToStr}
-                finishedWords={finishedWords}
-              />
-              <Caret
-                isCaretMiddle={isCaretMiddle}
-                charsPerLine={charsPerLine}
-                loading={loading}
-                error={error}
-              />
-            </>
-          ) : (
-            <Statistics
+    <>
+      <Head>
+        <title>typr</title>
+        <meta name='keywords' content='homepage' />
+      </Head>
+      <div className='m-0 bg-slate-800 h-screen w-full'>
+        <div className='w-full h-screen flex flex-col items-center justify-center'>
+          {started ? (
+            <Timer started={started} timer={timer} setTimer={setTimer} />
+          ) : null}
+          {started ? null : (
+            <TimerOptions
+              setConstTimer={setConstTimer}
+              timer={timer}
+              setTimer={setTimer}
               constTimer={constTimer}
-              typedWords={typedWords}
-              typedLetters={typedLetters}
-              typeAgainHandler={typeAgainHandler}
+              setCharsPerLine={setCharsPerLine}
+              setTypedCharsPerRow={setTypedCharsPerRow}
+              inputRef={inputRef}
             />
           )}
+          <div
+            onClick={() => {
+              inputRef.current?.focus();
+            }}
+          >
+            {timer != 0 ? (
+              <>
+                <Words
+                  words={words}
+                  loading={loading}
+                  error={error}
+                  onChangeHandler={onChangeHandler}
+                  activeWord={activeWord}
+                  input={input}
+                  arrToStr={arrToStr}
+                  finishedWords={finishedWords}
+                />
+                <Caret
+                  isCaretMiddle={isCaretMiddle}
+                  charsPerLine={charsPerLine}
+                  loading={loading}
+                  error={error}
+                />
+              </>
+            ) : (
+              <Statistics
+                constTimer={constTimer}
+                typedWords={typedWords}
+                typedLetters={typedLetters}
+                typeAgainHandler={typeAgainHandler}
+              />
+            )}
+          </div>
+          <Input
+            onChangeHandler={onChangeHandler}
+            inputRef={inputRef}
+            typedCharsPerRow={typedCharsPerRow}
+            charsPerRow={charsPerRow}
+            started={started}
+            timer={timer}
+          />
         </div>
-        <Input
-          onChangeHandler={onChangeHandler}
-          inputRef={inputRef}
-          typedCharsPerRow={typedCharsPerRow}
-          charsPerRow={charsPerRow}
-          started={started}
-          timer={timer}
-        />
+        <Error widthError={widthError} />
       </div>
-      <Error widthError={widthError} />
-    </div>
+      <Navbar />
+    </>
   );
 };
 

@@ -26,7 +26,7 @@ export const Input: React.FC<InputProps> = ({
         // MAX LENGTH OF THE INPUT CAN ONLY BE
         // BELOW THE MAX CHARACTERS PER ROW
         maxLength={
-          charsPerRow - typedCharsPerRow > 26
+          charsPerRow - typedCharsPerRow > 24
             ? 24
             : charsPerRow - typedCharsPerRow
         }
