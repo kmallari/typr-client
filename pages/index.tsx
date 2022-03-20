@@ -98,10 +98,8 @@ const Home: NextPage = () => {
     return a;
   };
 
-  // FETCH DATA FROM "https://whj2et0lze.execute-api.ap-southeast-1.amazonaws.com/words/get-words"
+  // FETCH DATA FROM https://whj2et0lze.execute-api.ap-southeast-1.amazonaws.com/getWords
   const fetchData = async () => {
-
-
     fetch(
       "https://whj2et0lze.execute-api.ap-southeast-1.amazonaws.com/words/get-words",
       {
@@ -113,8 +111,14 @@ const Home: NextPage = () => {
       }
     )
       .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch(() => console.log("ERROR"));
+      .then((data) => {
+        setAllWords(splitTo2DArr(data));
+        setWords(getOneForty(splitTo2DArr(data)));
+        setActiveWord(getOneForty(splitTo2DArr(data))[0]);
+
+        setLoading(false);
+      })
+      .catch(() => setError(true));
   };
 
   const typeAgainHandler = () => {
