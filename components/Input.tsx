@@ -27,7 +27,7 @@ export const Input: React.FC<InputProps> = ({
         // BELOW THE MAX CHARACTERS PER ROW
         maxLength={
           charsPerRow - typedCharsPerRow > 24
-            ? 24
+            ? 80
             : charsPerRow - typedCharsPerRow
         }
         autoComplete='off'

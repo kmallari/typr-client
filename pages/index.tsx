@@ -8,20 +8,31 @@ import { TimerOptions } from "../components/TimerOptions";
 import { Statistics } from "../components/Statistics";
 import { Error } from "../components/Error";
 import { Navbar } from "../components/Navbar";
+import fetch_words from "./api/fetch_words";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { checkServerIdentity } from "tls";
 import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
+// import Image from "next/image";
+// import styles from "../styles/Home.module.css";
 
-/*
-TO DO
-  - focus on input after clicking agane
+export const getServerSideProps = async () => {
+  // const id = context.params.id;
+  // const res = await fetch("https://jsonplaceholder.typicode.com/users/" + id);
+  // const data = await res.json();
 
-KNOWN PROBLEMS
-  - lastWordPerRow does not change when window is maximized
-  - caret does not follow the last word when resizing window during typing test
-*/
+  // return {
+  //   props: { ninja: data },
+  // };
+
+  const res = await fetch(
+    "https://5kg8owmfme.execute-api.ap-southeast-1.amazonaws.com/getWords"
+  );
+  const data: string[] = await res.json();
+
+  return {
+    props: { fetchedWords: data },
+  };
+};
 
 const Home: NextPage = () => {
   const [allWords, setAllWords] = useState<string[][]>([]);
@@ -46,9 +57,6 @@ const Home: NextPage = () => {
   const [widthError, setWidthError] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { height, width } = useWindowDimensions();
-
-  // console.log("🚀 ~ file: index.tsx ~ line 315 ~ timer", timer)
-  // console.log("🚀 ~ file: index.tsx ~ line 40 ~ started", started)
 
   const splitTo2DArr = (input: string[]): string[][] => {
     // CONVERTS THE JSON ARRAY TO AN ARRAY OF LETTERS
@@ -90,22 +98,23 @@ const Home: NextPage = () => {
     return a;
   };
 
-  // FETCH DATA FROM https://5kg8owmfme.execute-api.ap-southeast-1.amazonaws.com/getWords
+  // FETCH DATA FROM "https://whj2et0lze.execute-api.ap-southeast-1.amazonaws.com/words/get-words"
   const fetchData = async () => {
-    try {
-      const response = await fetch(
-        "https://5kg8owmfme.execute-api.ap-southeast-1.amazonaws.com/getWords"
-      );
-      const json: string[] = await response.json();
 
-      setAllWords(splitTo2DArr(json));
-      setWords(getOneForty(splitTo2DArr(json)));
-      setActiveWord(getOneForty(splitTo2DArr(json))[0]);
 
-      setLoading(false);
-    } catch (error) {
-      setError(true);
-    }
+    fetch(
+      "https://whj2et0lze.execute-api.ap-southeast-1.amazonaws.com/words/get-words",
+      {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch(() => console.log("ERROR"));
   };
 
   const typeAgainHandler = () => {
@@ -222,7 +231,7 @@ const Home: NextPage = () => {
     let chars: number;
     if (width != null) {
       if (width > 440 && width <= 990) {
-        chars = 27 + Math.floor((width - 440) / 16);
+        chars = 28 + Math.floor((width - 440) / 16);
         setCharsPerRow(chars);
       } else if (width > 990) {
         setCharsPerRow(62);
@@ -232,7 +241,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (timer != 0 && started) {
-      // maybe add a modal saying "Don't resize the window while typing"
       setTimer(0);
       setStarted(false);
       setWidthError(true);
@@ -253,12 +261,12 @@ const Home: NextPage = () => {
   useEffect(() => {
     calculateCharsPerRow();
     splitToRows();
-  }, [started]);
+  }, [started, words, width]);
 
-  useEffect(() => {
-    calculateCharsPerRow();
-    splitToRows();
-  }, [words]);
+  // useEffect(() => {
+  //   calculateCharsPerRow();
+  //   splitToRows();
+  // }, [words]);
 
   useEffect(() => {
     let tempStarted = started;
