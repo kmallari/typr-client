@@ -25,7 +25,7 @@ export const Words: React.FC<Words> = ({
   return (
     <div
       id='words-wrapper'
-      className='w-11/12 lg:max-w-4xl h-28 text-2xl overflow-hidden select-none leading-relaxed font-jb_mono text-slate-600 flex flex-row flex-wrap mx-auto lg:mx-0 mt-2'
+      className='w-11/12 lg:max-w-4xl h-28 text-2xl overflow-hidden select-none leading-relaxed font-jb_mono text-slate-600 flex flex-row flex-wrap mx-auto mt-2'
     >
       {
         // IF LOADING IS TRUE, SHOW "Loading..."
