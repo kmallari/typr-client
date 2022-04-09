@@ -37,7 +37,7 @@ export const TimerOptions: React.FC<TimerOptionsProps> = ({
       animate={{
         opacity: [0, 1],
       }}
-      className='w-11/12 lg:max-w-4xl h-44 select-none text-sm font-jb_mono text-slate-600 flex flex-row justify-start gap-6 items-start'
+      className='w-11/12 lg:max-w-4xl h-auto select-none font-jb_mono text-base text-slate-600 flex flex-row justify-start gap-6 items-start mx-auto'
     >
       <div className='text-slate-500'>time</div>
       <div className='flex flex-row gap-6'>

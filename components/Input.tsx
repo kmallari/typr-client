@@ -30,6 +30,7 @@ export const Input: React.FC<InputProps> = ({
             ? 24
             : charsPerRow - typedCharsPerRow
         }
+        autoCapitalize='off'
         autoComplete='off'
         className='absolute -top-96'
         ref={inputRef}

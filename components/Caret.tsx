@@ -38,7 +38,7 @@ export const Caret: React.FC<InputProps> = ({
         repeat: Infinity,
         duration: 1,
       }}
-      className='w-11/12 lg:max-w-4xl h-28 text-2xl absolute left-0 right-1 ml-auto mr-auto top-0 bottom-0 mt-auto mb-auto'
+      className='w-11/12 lg:max-w-4xl h-28 text-2xl absolute left-0 right-1 ml-auto mr-auto top-10 bottom-0 mt-auto mb-auto'
     >
       {
         // IF LOADING IS TRUE, SHOW "Loading..."

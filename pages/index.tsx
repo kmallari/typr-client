@@ -44,7 +44,7 @@ const Home: NextPage = () => {
   const [input, setInput] = useState<string[]>([]);
   // const [fiftyCount, setFiftyCount] = useState<number>(0);
   const [finishedWords, setFinishedWords] = useState<string[]>([]);
-  const [charsPerRow, setCharsPerRow] = useState<number>(61);
+  const [charsPerRow, setCharsPerRow] = useState<number>(57);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const [typedWords, setTypedWords] = useState<number>(0);
   const [typedLetters, setTypedLetters] = useState<number>(0);
@@ -234,11 +234,14 @@ const Home: NextPage = () => {
   const calculateCharsPerRow = (): void => {
     let chars: number;
     if (width != null) {
-      if (width > 440 && width <= 990) {
+      console.log("test1");
+      if (width <= 990) {
+        console.log("test2");
         chars = 28 + Math.floor((width - 440) / 16);
         setCharsPerRow(chars);
       } else if (width > 990) {
-        setCharsPerRow(62);
+        console.log("test3");
+        setCharsPerRow(57);
       }
     }
   };
@@ -321,6 +324,7 @@ const Home: NextPage = () => {
             />
           )}
           <div
+            className='w-full'
             onClick={() => {
               inputRef.current?.focus();
             }}
