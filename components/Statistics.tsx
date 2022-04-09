@@ -19,7 +19,7 @@ export const Statistics: React.FC<StatisticsProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className='w-11/12 flex flex-col sm:flex-row items-start lg:items-center justify-between font-jb_mono gap-4 sm:gap-10 lg:gap-28 mt-3 mx-auto'
+      className='w-11/12 lg:max-w-4xl flex flex-col sm:flex-row items-start lg:items-center justify-between font-jb_mono gap-4 sm:gap-10 lg:gap-28 mt-3 mx-auto'
     >
       <div className='flex flex-row w-full gap-8'>
         <div className='flex flex-col h-full items-start justify-center text-slate-600'>

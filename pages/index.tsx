@@ -44,7 +44,7 @@ const Home: NextPage = () => {
   const [input, setInput] = useState<string[]>([]);
   // const [fiftyCount, setFiftyCount] = useState<number>(0);
   const [finishedWords, setFinishedWords] = useState<string[]>([]);
-  const [charsPerRow, setCharsPerRow] = useState<number>(57);
+  const [charsPerRow, setCharsPerRow] = useState<number>(62);
   const [lastWordPerRow, setLastWordPerRow] = useState<string[][]>([]);
   const [typedWords, setTypedWords] = useState<number>(0);
   const [typedLetters, setTypedLetters] = useState<number>(0);
@@ -241,7 +241,7 @@ const Home: NextPage = () => {
         setCharsPerRow(chars);
       } else if (width > 990) {
         console.log("test3");
-        setCharsPerRow(57);
+        setCharsPerRow(62);
       }
     }
   };
